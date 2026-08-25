@@ -1,0 +1,9 @@
+extend type Query {
+  validarPermisoAcceso(rebeldeId: ID!, sectorId: ID!): Boolean!
+}
+
+type Rebelde @key(fields: "id") {
+  id: ID!
+  nombre: String!
+  rol: String!
+}

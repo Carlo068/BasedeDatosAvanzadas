@@ -1,0 +1,20 @@
+{
+  "name": "resistencia-tartaro-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "gateway",
+    "services/*"
+  ],
+  "scripts": {
+    "install:all": "npm install",
+    "dev:gateway": "npm run dev --workspace=gateway",
+    "dev:campamentos": "npm run dev --workspace=services/campamentos-service",
+    "dev:seguridad": "npm run dev --workspace=services/seguridad-service",
+    "dev:auditoria": "npm run dev --workspace=services/auditoria-service",
+    "dev": "npx concurrently \"npm run dev:campamentos\" \"npm run dev:seguridad\" \"npm run dev:auditoria\" \"npm run dev:gateway\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

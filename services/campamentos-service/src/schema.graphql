@@ -1,0 +1,15 @@
+extend type Query {
+  verCampamento(id: ID!): Campamento
+  allCampamentos: [Campamento!]!
+}
+
+extend type Mutation {
+  registrarCampamento(nombre: String!, ubicacion: String!, capacidad: Int!): Campamento!
+}
+
+type Campamento @key(fields: "id") {
+  id: ID!
+  nombre: String!
+  ubicacion: String!
+  capacidad: Int!
+}

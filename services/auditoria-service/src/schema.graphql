@@ -1,0 +1,10 @@
+extend type Query {
+  buscarLogsAuditoria(limite: Int!): [LogTransmision!]!
+}
+
+type LogTransmision {
+  id: ID!
+  evento: String!
+  detalle: String!
+  fecha: String!
+}
