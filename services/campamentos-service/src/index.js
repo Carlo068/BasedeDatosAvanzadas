@@ -82,7 +82,30 @@ const server = new ApolloServer({
 
 const port = parseInt(process.env.PORT_CAMPAMENTOS) || 4001;
 const { url } = await startStandaloneServer(server, {
-  port
+  listen: { port }
 });
 
 console.log(`🏕️ Subgrafo de Campamentos levantado exitosamente en: ${url}`);
+
+async function testPersistencia() {
+  try {
+    // 1. Escritura: Forjado de un nuevo campamento
+    const nuevoCampamiento = new CampamentoModel({
+      nombre: "Búnker de las Parcas",
+      ubicacion: "Coordenadas Subterráneas S-3",
+      capacidad: 85
+    });
+
+    // Guardado físico asíncrono
+    const campamentoGuardado = await nuevoCampamiento.save();
+    console.log("💾 Campamento guardado con éxito en los Tomos:", campamentoGuardado._id);
+
+    // 2. Lectura: Verificación del documento escrito
+    const campamentoPersistido = await CampamentoModel.findOne({ _id: campamentoGuardado._id });
+    console.log("🔍 Campamento recuperado de MongoDB:", campamentoPersistido.nombre);
+
+  } catch (err) {
+    console.error("❌ Error de validación o persistencia:", err.message);
+  }
+}
+testPersistencia();

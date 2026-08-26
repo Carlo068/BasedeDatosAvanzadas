@@ -45,7 +45,7 @@ const server = new ApolloServer({
 
 const port = parseInt(process.env.PORT_SEGURIDAD) || 4002;
 const { url } = await startStandaloneServer(server, {
-  port
+  listen: { port }
 });
 
 console.log(`🛡️ Subgrafo de Seguridad (Neo4j) levantado exitosamente en: ${url}`);

@@ -20,7 +20,7 @@ const server = new ApolloServer({
 
 const port = parseInt(process.env.PORT_GATEWAY) || 4000;
 const { url } = await startStandaloneServer(server, {
-  port,
+  listen: { port },
 });
 
 console.log(`🚀 API Gateway (Supergraph) unificada y lista en: ${url}`);

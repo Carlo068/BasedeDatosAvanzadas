@@ -118,7 +118,7 @@ const server = new ApolloServer({
 
 const port = parseInt(process.env.PORT_AUDITORIA) || 4003;
 const { url } = await startStandaloneServer(server, {
-  port
+  listen: { port }
 });
 
 console.log(`📊 Subgrafo de Auditoría (ScyllaDB + RabbitMQ Consumer) levantado exitosamente en: ${url}`);

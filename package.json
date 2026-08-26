@@ -16,5 +16,9 @@
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
+  },
+  "allowScripts": {
+    "@apollo/protobufjs@1.2.8": true,
+    "protobufjs@7.6.5": true
   }
 }
