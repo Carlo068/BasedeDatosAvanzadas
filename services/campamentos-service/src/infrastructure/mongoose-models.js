@@ -1,20 +1,29 @@
 import mongoose from 'mongoose';
 
-// Definición de las reglas físicas del documento
-const CampamentoSchema = new mongoose.Schema({
+// 1. Definir el subesquema de Suministro primero
+const SuministroSchema = new mongoose.Schema({
   nombre: { 
     type: String, 
-    required: [true, 'El nombre del campamento es obligatorio para la resistencia.'] 
+    required: [true, 'El suministro necesita un nombre (ej. Buster Sword).'] 
   },
-  ubicacion: { 
-    type: String, 
-    required: [true, 'La ubicación es crítica para evitar el radar enemigo.'] 
-  },
-  capacidad: { 
+  cantidad: { 
     type: Number, 
-    required: [true, 'Debes definir la capacidad de sobrevivientes.'],
-    min: [1, 'Un campamento debe poder albergar al menos a un guerrero.']
+    required: [true, 'Debes definir la cantidad.'],
+    min: [0, 'No puedes tener cantidades negativas de suministros.']
+  },
+  categoria: { 
+    type: String, 
+    required: [true, 'La categoría es obligatoria.'],
+    enum: ['ARMAMENTO', 'VIVERES', 'MEDICINA'] // Validación de catálogo místico
   }
+});
+
+// 2. Modificar el esquema del Campamento para incrustar el arreglo de suministros
+const CampamentoSchema = new mongoose.Schema({
+  nombre: { type: String, required: true },
+  ubicacion: { type: String, required: true },
+  capacidad: { type: Number, required: true },
+  suministros: [SuministroSchema] // ¡Incrustación NoSQL directa!
 }, { 
   timestamps: true // Agrega automáticamentecreatedAt y updatedAt
 });

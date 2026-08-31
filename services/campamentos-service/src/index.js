@@ -38,7 +38,7 @@ const resolvers = {
   Query: {
     verCampamento: async (_, { id }) => {
       const doc = await CampamentoModel.findById(id);
-      return doc ? { id: doc._id, nombre: doc.nombre, ubicacion: doc.ubicacion, capacidad: doc.capacidad } : null;
+      return doc ? { id: doc._id, nombre: doc.nombre, ubicacion: doc.ubicacion, capacidad: doc.capacidad, suministros: doc.suministros } : null;
     },
     allCampamentos: async () => {
       const docs = await CampamentoModel.find({});
@@ -66,6 +66,37 @@ const resolvers = {
       }
 
       return { id: doc._id, nombre: doc.nombre, ubicacion: doc.ubicacion, capacidad: doc.capacidad };
+    },
+
+    registrarSuministro: async (_, { campamentoId, nombre, cantidad, categoria }) => {
+      // 1. Buscar el campamento padre por ID
+      const campamento = await CampamentoModel.findById(campamentoId);
+      if (!campamento) {
+        throw new Error("El campamento de destino no existe en el Tártaro.");
+      }
+
+      // 2. Crear el objeto del subdocumento
+      const nuevoSuministro = {
+        nombre,
+        cantidad,
+        categoria
+      };
+
+      // 3. Insertar el suministro directamente al arreglo incrustado
+      campamento.suministros.push(nuevoSuministro);
+
+      // 4. Guardar el documento padre de forma asíncrona
+      const campamentoActualizado = await campamento.save();
+
+      // 5. Obtener el suministro recién guardado (para retornar su _id generado por Mongo)
+      const suministroGuardado = campamentoActualizado.suministros[campamentoActualizado.suministros.length - 1];
+
+      return {
+        id: suministroGuardado._id,
+        nombre: suministroGuardado.nombre,
+        cantidad: suministroGuardado.cantidad,
+        categoria: suministroGuardado.categoria
+      };
     }
   },
   Campamento: {
