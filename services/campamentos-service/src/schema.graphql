@@ -36,3 +36,14 @@ extend type Mutation {
   ): Suministro!
 }
 
+type ReporteArsenal {
+  categoria: String!        # Ej. "ARMAMENTO", "VIVERES"
+  totalSuministros: Int!    # Suma total de unidades de esta categoría
+  campamentosAsociados: [String!]! # Lista de nombres únicos de campamentos que poseen esta categoría
+}
+
+# 2. Extender las consultas raíz para exponer el reporte analítico
+extend type Query {
+  # Ejecuta el pipeline analítico sobre los campamentos de la resistencia
+  reporteGlobalArsenal: [ReporteArsenal!]!
+}

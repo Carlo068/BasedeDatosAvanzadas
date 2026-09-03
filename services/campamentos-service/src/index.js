@@ -43,7 +43,41 @@ const resolvers = {
     allCampamentos: async () => {
       const docs = await CampamentoModel.find({});
       return docs.map(doc => ({ id: doc._id, nombre: doc.nombre, ubicacion: doc.ubicacion, capacidad: doc.capacidad }));
-    }
+    },
+    reporteGlobalArsenal: async () => {
+        try {
+          // Ejecución del pipeline de agregación física en la base de datos
+          const resultado = await CampamentoModel.aggregate([
+            // Etapa 1: Aplanar el arreglo de suministros incrustados
+            {
+              $unwind: "$suministros"
+            },
+            // Etapa 2: Agrupar por categoría y realizar cálculos métricos
+            {
+              $group: {
+                _id: "$suministros.categoria", // Llave de agrupación obligatoria
+                totalSuministros: { $sum: "$suministros.cantidad" }, // Acumulador matemático
+                campamentosAsociados: { $addToSet: "$nombre" } // Acumulador de valores únicos
+              }
+            },
+            // Etapa 3: Ordenar los resultados por volumen de forma descendente
+            {
+              $sort: { totalSuministros: -1 }
+            }
+          ]);
+
+          // Mapear los datos de salida del pipeline (_id) al contrato tipado de GraphQL
+          return resultado.map(item => ({
+            categoria: item._id, // El _id de la agregación contiene la categoría
+            totalSuministros: item.totalSuministros,
+            campamentosAsociados: item.campamentosAsociados
+          }));
+
+        } catch (err) {
+          console.error("❌ Error catastrófico en el pipeline analítico:", err.message);
+          throw new Error("No se pudo compilar el reporte del arsenal en el Tártaro.");
+        }
+    },
   },
   Mutation: {
     registrarCampamento: async (_, { nombre, ubicacion, capacidad }) => {
