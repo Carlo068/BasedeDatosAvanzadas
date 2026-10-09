@@ -1,9 +1,28 @@
 extend type Query {
+  # Perfil del rebelde autenticado (requiere header Authorization: Bearer <token>)
+  me: Rebelde
   validarPermisoAcceso(rebeldeId: ID!, sectorId: ID!): Boolean!
+}
+
+extend type Mutation {
+  registrarRebelde(nombre: String!, email: String!, password: String!, rol: String): Rebelde!
+  login(input: LoginInput!): AuthPayload!
+  logout: Boolean!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+type AuthPayload {
+  token: String!
+  user: Rebelde!
 }
 
 type Rebelde @key(fields: "id") {
   id: ID!
   nombre: String!
+  email: String!
   rol: String!
 }

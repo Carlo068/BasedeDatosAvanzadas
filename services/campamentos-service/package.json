@@ -12,6 +12,8 @@
     "cassandra-driver": "4.2.0",
     "dotenv": "^16.4.5",
     "graphql": "^16.8.1",
-    "mongoose": "^8.2.0"
+    "mongoose": "^8.2.0",
+    "redis": "^6.2.1",
+    "redis-om": "^0.4.7"
   }
 }
