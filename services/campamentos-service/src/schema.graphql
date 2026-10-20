@@ -47,3 +47,29 @@ extend type Query {
   # Ejecuta el pipeline analítico sobre los campamentos de la resistencia
   reporteGlobalArsenal: [ReporteArsenal!]!
 }
+
+# ===== Autenticación híbrida JWT + Redis (sesiones activas) =====
+type AuthPayload {
+  token: String!
+  user: UserPayload!
+}
+
+type UserPayload {
+  id: ID!
+  nombre: String!
+  email: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+extend type Query {
+  me: UserPayload
+}
+
+extend type Mutation {
+  login(input: LoginInput!): AuthPayload!
+  logout: Boolean!
+}
