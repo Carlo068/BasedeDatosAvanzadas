@@ -10,7 +10,8 @@ import mongoose from 'mongoose';
 import amqp from 'amqplib';
 import { CampamentoModel } from './infrastructure/mongoose-models.js';
 import { Campamento } from './domain/entities.js';
-import { initRedisOM, campamentoRepository } from './infrastructure/redis-om.js';
+import { initRedisOM, campamentoRepository, redisClient } from './infrastructure/redis-om.js';
+import { authResolvers, createAuthContext } from './auth.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const typeDefs = parse(fs.readFileSync(path.join(__dirname, 'schema.graphql'), 'utf8'));
@@ -236,13 +237,22 @@ const resolvers = {
   }
 };
 
+// Combinar los resolvers del dominio con los de autenticación (me, login, logout)
+const allResolvers = {
+  ...resolvers,
+  Query: { ...resolvers.Query, ...authResolvers.Query },
+  Mutation: { ...resolvers.Mutation, ...authResolvers.Mutation }
+};
+
 const server = new ApolloServer({
-  schema: buildSubgraphSchema({ typeDefs, resolvers })
+  schema: buildSubgraphSchema({ typeDefs, resolvers: allResolvers })
 });
 
 const port = parseInt(process.env.PORT_CAMPAMENTOS) || 4001;
 const { url } = await startStandaloneServer(server, {
-  listen: { port }
+  listen: { port },
+  // Middleware de contexto: se ejecuta en CADA petición entrante (JWT + sesión activa en Redis)
+  context: createAuthContext(redisClient)
 });
 
 console.log(`🏕️ Subgrafo de Campamentos levantado exitosamente en: ${url}`);
